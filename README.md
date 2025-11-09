@@ -24,7 +24,34 @@ export APP_SECRET=$(openssl rand -hex 32)
 docker compose up -d
 ```
 
-Visit `http://localhost` in your browser.
+Visit `http://localhost:7700` in your browser.
+
+## API Endpoints
+
+### Public API
+
+- `POST /api/p` - Create paste
+- `GET /api/p/{id}` - Get paste
+- `POST /api/p/{id}` - Edit paste (if allowed)
+- `POST /api/p/{id}/auth` - Authenticate with password
+- `GET /api/raw/{id}` - Get raw paste content
+
+### Admin API (Port 7701)
+
+> ⚠️ No authentication - only expose internally or use Cloudflare Tunnel with authentication
+
+- `GET /admin` - List all pastes
+- `POST /admin/delete/{id}` - Delete specific paste
+- `POST /admin/purge` - Delete all expired pastes
+
+## Ports
+
+| Service   | Port | Access                                               |
+| --------- | ---- | ---------------------------------------------------- |
+| Web UI    | 7700 | `http://localhost:7700` or `http://192.168.x.x:7700` |
+| Admin API | 7701 | `http://localhost:7701` or `http://192.168.x.x:7701` |
+
+Local network only by default. Use Cloudflare Tunnel or reverse proxy for external access.
 
 ## Architecture
 
@@ -58,7 +85,8 @@ export APP_SECRET=$(openssl rand -hex 32)
 docker compose up -d
 ```
 
-Runs on `http://localhost`
+- Web UI: `http://localhost:7700`
+- Admin API: `http://localhost:7701`
 
 ## License
 
