@@ -3,7 +3,8 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      - APP_SECRET=super_long_random_hex
+      # Generate a random hex string for production: openssl rand -hex 32
+      - APP_SECRET=${APP_SECRET:-super_long_random_hex}
     ports:
       - "80:8080"
       - "127.0.0.1:8787:8787"
