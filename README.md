@@ -1,3 +1,5 @@
+![Binly Logo](web/public/logo.svg)
+
 # Binly
 
 Minimal, fast code sharing. No clutter.
