@@ -21,7 +21,7 @@ cd Binly
 export APP_SECRET=$(openssl rand -hex 32)
 
 # Start with Docker Compose
-docker-compose up
+docker compose up -d
 ```
 
 Visit `http://localhost` in your browser.
@@ -55,7 +55,7 @@ Frontend runs on `http://localhost:5173`, backend serves on `http://localhost:80
 
 ```bash
 export APP_SECRET=$(openssl rand -hex 32)
-docker-compose up
+docker compose up -d
 ```
 
 Runs on `http://localhost`

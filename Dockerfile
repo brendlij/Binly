@@ -7,7 +7,7 @@ RUN bun install
 RUN bun run build
 
 # 2) Build backend
-FROM golang:1.23-alpine AS go
+FROM golang:1.25-alpine AS go
 WORKDIR /src
 COPY backend/ ./backend/
 WORKDIR /src/backend/cmd/server
