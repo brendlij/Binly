@@ -91,11 +91,12 @@ function scrollToSection(id: string) {
   gap: var(--spacing-xl);
   max-width: 1200px;
   margin: 0 auto;
+  align-items: start;
 }
 
 .docs-nav {
   position: sticky;
-  top: var(--spacing-lg);
+  top: var(--spacing-sm);
   height: fit-content;
   padding: var(--spacing-md);
   border: 1px solid var(--border);

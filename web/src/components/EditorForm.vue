@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect, nextTick } from "vue";
 import { Icon } from "@iconify/vue";
+import hljs from "highlight.js";
 import CustomSelect from "./CustomSelect.vue";
 
 type Ttl = "0" | "15m" | "1h" | "1d" | "7d";
@@ -47,6 +48,18 @@ const remain = computed(() =>
 const remainPercentage = computed(() => {
   if (!remain.value || !props.maxLen) return 100;
   return Math.max(0, (remain.value / props.maxLen) * 100);
+});
+
+const detectedLanguage = computed(() => {
+  if (!content.value.trim() || syntax.value !== "auto") {
+    return null;
+  }
+  try {
+    const result = hljs.highlightAuto(content.value);
+    return result.language || null;
+  } catch {
+    return null;
+  }
 });
 
 watchEffect(() => {
@@ -116,75 +129,90 @@ function handleEditorTab(e: KeyboardEvent) {
         />
       </div>
     </div>
-
+    
     <div class="controls">
       <div class="controls-row">
-        <CustomSelect
-          v-if="showSyntax"
-          v-model="syntax"
-          :options="[
-            { value: 'auto', label: 'auto' },
-            { value: 'js', label: 'js' },
-            { value: 'ts', label: 'ts' },
-            { value: 'py', label: 'py' },
-            { value: 'go', label: 'go' },
-            { value: 'rust', label: 'rust' },
-            { value: 'json', label: 'json' },
-            { value: 'xml', label: 'xml' },
-            { value: 'sql', label: 'sql' },
-          ]"
-          :disabled="isLoading"
-        />
+        <div class="controls-middle">
+          <div v-if="showSyntax" class="control-group">
+            <label class="control-label">Syntax Highlighting</label>
+            <div class="control-content">
+              <CustomSelect
+                v-model="syntax"
+                :options="[
+                  { value: 'auto', label: 'auto' },
+                  { value: 'js', label: 'js' },
+                  { value: 'ts', label: 'ts' },
+                  { value: 'py', label: 'py' },
+                  { value: 'go', label: 'go' },
+                  { value: 'rust', label: 'rust' },
+                  { value: 'json', label: 'json' },
+                  { value: 'xml', label: 'xml' },
+                  { value: 'sql', label: 'sql' },
+                ]"
+                :disabled="isLoading"
+              />
+            </div>
+          </div>
 
-        <CustomSelect
-          v-if="showTtl"
-          v-model="ttl"
-          :options="[
-            { value: '15m', label: '15 minutes' },
-            { value: '1h', label: '1 hour' },
-            { value: '1d', label: '1 day' },
-            { value: '7d', label: '7 days' },
-            { value: '0', label: 'Never' },
-          ]"
-          :disabled="isLoading"
-        />
+          <div v-if="showTtl" class="control-group">
+            <label class="control-label">Expiration</label>
+            <CustomSelect
+              v-model="ttl"
+              :options="[
+                { value: '15m', label: '15 minutes' },
+                { value: '1h', label: '1 hour' },
+                { value: '1d', label: '1 day' },
+                { value: '7d', label: '7 days' },
+                { value: '0', label: 'Never' },
+              ]"
+              :disabled="isLoading"
+            />
+          </div>
 
-        <label v-if="showAllowEdit" class="control-checkbox">
-          <input type="checkbox" v-model="allowEdit" :disabled="isLoading" />
-          <span>Allow editing</span>
-        </label>
+          <span v-if="remain !== undefined" class="character-count">
+            {{ remain.toLocaleString() }} characters remaining
+          </span>
+          <div class="detected-indicator">
+            <span v-if="syntax === 'auto' && detectedLanguage">
+              Detected Language: <strong>{{ detectedLanguage }}</strong>
+            </span>
+          </div>
+        </div>
 
-        <input
-          v-if="showPassword"
-          type="password"
-          v-model="password"
-          placeholder="Optional password"
-          class="control-input"
-          :disabled="isLoading"
-        />
-      </div>
+        <div class="controls-checkboxes">
+          <label v-if="showAllowEdit" class="control-checkbox">
+            <input type="checkbox" v-model="allowEdit" :disabled="isLoading" />
+            <span>Allow editing</span>
+          </label>
+        </div>
 
-      <div class="controls-row controls-bottom">
-        <span v-if="remain !== undefined" class="character-count">
-          {{ remain.toLocaleString() }} characters remaining
-        </span>
-
-        <button
-          @click="onSubmit"
-          class="submit-button"
-          :disabled="isLoading || !content.trim()"
-        >
-          <Icon
-            :icon="mode === 'edit' ? 'tabler:check' : 'tabler:plus'"
-            width="18"
-            height="18"
+        <div class="controls-right">
+          <input
+            v-if="showPassword"
+            type="password"
+            v-model="password"
+            placeholder="Optional password"
+            class="password-input"
+            :disabled="isLoading"
           />
-          <span>{{
-            isLoading
-              ? "Processing..."
-              : submitLabel ?? (mode === "edit" ? "Save" : "Create")
-          }}</span>
-        </button>
+
+          <button
+            @click="onSubmit"
+            class="submit-button"
+            :disabled="isLoading || !content.trim()"
+          >
+            <Icon
+              :icon="mode === 'edit' ? 'tabler:check' : 'tabler:plus'"
+              width="18"
+              height="18"
+            />
+            <span>{{
+              isLoading
+                ? "Processing..."
+                : submitLabel ?? (mode === "edit" ? "Save" : "Create")
+            }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -201,6 +229,13 @@ function handleEditorTab(e: KeyboardEvent) {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+}
+
+.detected-indicator {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  padding-left: var(--spacing-md);
+  min-height: 1.2rem;
 }
 
 .editor-wrapper {
@@ -222,7 +257,7 @@ function handleEditorTab(e: KeyboardEvent) {
   line-height: 1.6;
   letter-spacing: 0;
   resize: vertical;
-  transition: var(--transition);
+  will-change: height;
 }
 
 .editor:focus {
@@ -241,7 +276,6 @@ function handleEditorTab(e: KeyboardEvent) {
 .capacity-fill {
   height: 100%;
   background: var(--accent);
-  transition: all 0.3s ease-out;
 }
 
 .capacity-fill.capacity-warning {
@@ -262,41 +296,52 @@ function handleEditorTab(e: KeyboardEvent) {
   display: flex;
   gap: var(--spacing-md);
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
+  width: 100%;
 }
 
-.controls-bottom {
-  justify-content: space-between;
-  align-items: center;
-}
-
-.control-input {
+.controls-middle {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  align-items: flex-end;
   flex: 1;
-  min-width: 120px;
-  color: var(--fg);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 0.5rem 0.75rem;
-  font-family: inherit;
-  font-size: 0.875rem;
-  transition: var(--transition);
 }
 
-.control-input:hover:not(:disabled) {
-  border-color: transparent;
-  opacity: 0.9;
+.controls-checkboxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+  min-width: 280px;
 }
 
-.control-input:focus {
-  outline: none;
-  border-color: transparent;
-  opacity: 0.9;
+.controls-right {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+  white-space: nowrap;
 }
 
-.control-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.control-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.control-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .control-checkbox {
@@ -356,10 +401,47 @@ function handleEditorTab(e: KeyboardEvent) {
 .character-count {
   font-size: 0.8125rem;
   color: var(--muted);
+  white-space: nowrap;
+  padding-top: 1.5rem;
+}
+
+.password-input {
+  width: 140px;
+  height: 36px;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+.password-input:hover:not(:disabled) {
+  border-color: transparent;
+  opacity: 0.9;
+}
+
+.password-input:focus {
+  outline: none;
+  border-color: transparent;
+  opacity: 0.9;
+}
+
+.password-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.password-input::placeholder {
+  color: var(--muted);
 }
 
 .submit-button {
   padding: 0.625rem 1.5rem;
+  height: 36px;
   background: var(--accent);
   border: 1px solid var(--accent);
   border-radius: var(--radius-md);
@@ -371,6 +453,7 @@ function handleEditorTab(e: KeyboardEvent) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  box-sizing: border-box;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -421,6 +504,15 @@ function handleEditorTab(e: KeyboardEvent) {
 
   .controls-bottom {
     flex-direction: column-reverse;
+  }
+
+  .bottom-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .password-input {
+    width: 100%;
   }
 
   .character-count {

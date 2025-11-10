@@ -18,6 +18,7 @@ const isLoading = ref(false);
 const copySuccess = ref(false);
 const copyLinkSuccess = ref(false);
 const expandContent = ref(false);
+const syntaxHighlightingEnabled = ref(true);
 
 async function copyToClipboard() {
   try {
@@ -139,6 +140,7 @@ onMounted(load);
               width="14"
               height="14"
             />
+            <p style="margin-left:0.2rem">{{ copyLinkSuccess ? "Link copied" : "Copy link" }}</p>
           </button>
         </div>
         <div class="header-actions">
@@ -155,6 +157,19 @@ onMounted(load);
               height="16"
             />
           </button>
+          <label class="syntax-toggle">
+            <input
+              type="checkbox"
+              v-model="syntaxHighlightingEnabled"
+            />
+            <span :title="syntaxHighlightingEnabled ? 'Syntax highlighting enabled' : 'Syntax highlighting disabled'">
+              <Icon
+                :icon="syntaxHighlightingEnabled ? 'tabler:highlight' : 'tabler:highlight-off'"
+                width="16"
+                height="16"
+              />
+            </span>
+          </label>
           <button
             @click="copyToClipboard"
             class="action-btn"
@@ -179,7 +194,11 @@ onMounted(load);
         class="content-display"
         :class="{ expanded: expandContent }"
       >
-        <SyntaxHighlighter :code="content" :language="syntax" />
+        <SyntaxHighlighter 
+          :code="content" 
+          :language="syntax" 
+          :enabled="syntaxHighlightingEnabled" 
+        />
       </div>
 
       <div v-if="!editing && allowEdit" class="edit-section">
@@ -331,6 +350,32 @@ onMounted(load);
 
 .action-btn:focus {
   outline: none;
+}
+
+.syntax-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.syntax-toggle:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+.syntax-toggle input {
+  display: none;
+}
+
+.syntax-toggle span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .paste-id {

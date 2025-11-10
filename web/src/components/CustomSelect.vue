@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Icon } from "@iconify/vue";
 
 interface Option {
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const isOpen = ref(false);
+const selectElement = ref<HTMLElement | null>(null);
 
 function selectOption(value: string) {
   emit("update:modelValue", value);
@@ -27,10 +28,21 @@ function selectOption(value: string) {
 const selectedLabel = (props: any) =>
   props.options.find((opt: Option) => opt.value === props.modelValue)?.label ||
   props.options[0]?.label;
+
+const dropdownPosition = computed(() => {
+  if (!selectElement.value || !isOpen.value) return "top";
+  
+  const rect = selectElement.value.getBoundingClientRect();
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  
+  // Open upward if there's more space above, otherwise open downward
+  return spaceAbove > spaceBelow ? "top" : "bottom";
+});
 </script>
 
 <template>
-  <div class="custom-select" :class="{ disabled }">
+  <div class="custom-select" :class="{ disabled }" ref="selectElement">
     <button
       class="select-trigger"
       @click="isOpen = !isOpen"
@@ -47,7 +59,7 @@ const selectedLabel = (props: any) =>
     </button>
 
     <transition name="dropdown">
-      <div v-if="isOpen" class="select-dropdown">
+      <div v-if="isOpen" class="select-dropdown" :class="{ 'open-up': dropdownPosition === 'top' }">
         <button
           v-for="option in options"
           :key="option.value"
@@ -114,7 +126,7 @@ const selectedLabel = (props: any) =>
 
 .select-dropdown {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  bottom: calc(100% + 0.25rem);
   left: 0;
   right: 0;
   background: var(--bg);
@@ -123,6 +135,11 @@ const selectedLabel = (props: any) =>
   overflow: hidden;
   z-index: 10;
   box-shadow: none;
+}
+
+.select-dropdown.open-up {
+  top: auto;
+  bottom: calc(100% + 0.25rem);
 }
 
 .select-option {

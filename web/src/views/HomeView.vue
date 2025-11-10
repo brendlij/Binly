@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Icon } from "@iconify/vue";
 import EditorForm from "../components/EditorForm.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const url = ref<string | null>(null),
   err = ref<string | null>(null),
   isLoading = ref(false);
@@ -25,6 +27,8 @@ async function createPaste(p: any) {
     }
     const j = await res.json();
     url.value = `/p/${j.id}`;
+    // Direkt zum Paste navigieren
+    router.push(url.value);
   } finally {
     isLoading.value = false;
   }
@@ -33,12 +37,8 @@ async function createPaste(p: any) {
 
 <template>
   <section class="home-section">
-    <div class="header-content">
-      <div>
-        <h1>New Paste</h1>
-        <p class="subtitle">Share code and text instantly</p>
-      </div>
-    </div>
+    <h1>New Paste</h1>
+    <p class="subtitle">Share code and text instantly</p>
 
     <EditorForm
       mode="create"
@@ -53,18 +53,6 @@ async function createPaste(p: any) {
     />
 
     <transition name="fade">
-      <div v-if="url" class="success-box">
-        <div class="success-content">
-          <Icon icon="mdi:check" class="success-icon" width="24" height="24" />
-          <div>
-            <p class="success-label">Paste created</p>
-            <router-link :to="url" class="success-link">{{ url }}</router-link>
-          </div>
-        </div>
-      </div>
-    </transition>
-
-    <transition name="fade">
       <div v-if="err" class="error-box">
         {{ err }}
       </div>
@@ -76,57 +64,20 @@ async function createPaste(p: any) {
 .home-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
+  width: 100%;
+  max-width: 100%;
 }
 
-.header-content {
-  padding-bottom: var(--spacing-lg);
-}
-
-.header-content h1 {
-  margin: 0 0 var(--spacing-sm) 0;
+.home-section h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
 }
 
 .subtitle {
   color: var(--fg-secondary);
   font-size: 0.9375rem;
   margin: 0;
-}
-
-.success-box {
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  display: flex;
-  gap: var(--spacing-md);
-  animation: slideIn 0.2s ease-out;
-}
-
-.success-content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.success-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  color: var(--success);
-}
-
-.success-label {
-  color: var(--success);
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-}
-
-.success-link {
-  font-size: 0.9375rem;
 }
 
 .error-box {

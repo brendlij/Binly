@@ -6,10 +6,16 @@ import "highlight.js/styles/atom-one-dark.css";
 const props = defineProps<{
   code: string;
   language?: string;
+  enabled?: boolean;
 }>();
 
 const highlightedCode = computed(() => {
   if (!props.code) return "";
+
+  // If highlighting is disabled, return raw code
+  if (props.enabled === false) {
+    return props.code;
+  }
 
   try {
     if (props.language && props.language !== "auto") {

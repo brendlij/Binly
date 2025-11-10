@@ -10,6 +10,17 @@
           />
           <span class="title-text">inly</span>
         </router-link>
+        <nav class="navbar">
+          <a href="/docs" class="nav-link">Docs</a>
+          <a 
+            href="https://github.com/brendlij/Binly" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="nav-link"
+          >
+            <Icon icon="tabler:brand-github" width="18" height="18" />
+          </a>
+        </nav>
         <button
           class="theme-toggle"
           @click="toggleTheme"
@@ -91,6 +102,7 @@ function applyTheme() {
   --muted: #707070;
   --error: #ef4444;
   --success: #22c55e;
+  --scrollbar: var(--border); /* matches logo fold */
 
   /* Spacing & sizing */
   --spacing-xs: 0.25rem;
@@ -118,6 +130,7 @@ function applyTheme() {
   --border: #e6e6e7;
   --accent: #6366f1; /* same accent */
   --accent-hover: #4f46e5;
+  --scrollbar: var(--border); /* same as accent */
   --muted: #888;
   --error: #ef4444;
   --success: #22c55e;
@@ -143,10 +156,34 @@ body,
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-text-size-adjust: 100%;
+  /* Custom scrollbar */
+  scrollbar-color: var(--scrollbar) transparent;
+  scrollbar-width: thin;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 4px;
+  margin-right: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .app {
@@ -163,6 +200,7 @@ body,
   top: 0;
   z-index: 100;
   transition: var(--transition);
+  border-bottom: 1px solid var(--border);
 }
 
 .header-content {
@@ -171,6 +209,32 @@ body,
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+  gap: var(--spacing-lg);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: 0 auto;
+}
+
+.nav-link {
+  color: var(--fg-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-md);
+}
+
+.nav-link:hover {
+  color: var(--accent);
+  background: transparent;
 }
 
 .title {
@@ -269,6 +333,8 @@ body,
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+  
 }
 
 .footer-link {
