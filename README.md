@@ -12,6 +12,8 @@ Minimal, fast code sharing. No clutter.
 - **Simple API**: Easy to integrate and use
 - **Anonymous**: No accounts required
 
+![Binly Screenshot](images/mainscreen-dark.png)
+
 ## Quick Start
 
 ```bash
