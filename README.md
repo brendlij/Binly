@@ -9,6 +9,7 @@ Share code and text instantly. No signup, no clutter, no compromise.
 ```bash
 git clone https://github.com/brendlij/Binly.git
 cd Binly
+export APP_SECRET=$(openssl rand -hex 32)
 docker compose up -d
 ```
 
