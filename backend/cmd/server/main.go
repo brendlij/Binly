@@ -81,6 +81,7 @@ func main() {
 	// Static Vue dist
 	fs := http.FileServer(http.Dir(*uiDir))
 	r.Handle("/assets/*", fs) // Vite assets
+	r.Handle("/docs/*", fs)    // Documentation markdown files
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 		// SPA fallback
 		http.ServeFile(w, r, filepath.Join(*uiDir, "index.html"))
