@@ -52,7 +52,10 @@ onMounted(async () => {
 
   for (const file of docFiles) {
     try {
-      const response = await fetch(`/docs/${file}.md`);
+      const url = `/docs/${file}.md`;
+      console.log(`Fetching: ${url}`);
+      const response = await fetch(url);
+      console.log(`Response for ${file}.md:`, response.status);
       if (response.ok) {
         const markdown = await response.text();
         const html = await marked(markdown);
@@ -61,9 +64,11 @@ onMounted(async () => {
           title: formatTitle(file),
           html,
         });
+      } else {
+        console.warn(`Failed to fetch ${file}.md: ${response.status}`);
       }
     } catch (error) {
-      console.error(`Failed to load ${file}.md:`, error);
+      console.error(`Error loading ${file}.md:`, error);
     }
   }
 });
