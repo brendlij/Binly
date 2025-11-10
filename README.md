@@ -12,8 +12,22 @@ Minimal, fast code sharing. No clutter.
 - **Simple API**: Easy to integrate and use
 - **Anonymous**: No accounts required
 
+## Take a look
+
 ![Binly Screenshot](images/mainscreen-dark.png)
 
+<details>
+<summary>More</summary>
+
+![Pasted Code](images/mainscreen-dark-pasted.png)
+
+![Allow Edits](images/allowedit.png)
+
+![Set TTL](images/ttl.png)
+
+![Set Syntax Highlighting for Output](images/syntax-highlighting-for-out.png)
+
+</details>
 ## Quick Start
 
 ```bash
