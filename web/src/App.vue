@@ -25,7 +25,9 @@
     </header>
 
     <main class="main">
-      <router-view />
+      <div class="router-view-wrapper">
+        <router-view />
+      </div>
     </main>
 
     <footer class="footer">
@@ -239,9 +241,20 @@ body,
 .main {
   flex: 1;
   padding: var(--spacing-lg);
-  max-width: 900px;
+  max-width: 1225px;
   margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex children to respect height */
+}
+
+/* Ensure router-view fills available space */
+:deep(.router-view-wrapper) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .footer {
