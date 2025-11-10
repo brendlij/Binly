@@ -172,6 +172,8 @@ function scrollToSection(id: string) {
 .markdown-body {
   line-height: 1.7;
   color: var(--fg);
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .markdown-body h3 {
