@@ -19,5 +19,5 @@ WORKDIR /app
 COPY --from=go /out/app /app/app
 COPY --from=web /app/web/dist /app/ui
 VOLUME ["/app/data"]
-EXPOSE 8080 8787
-CMD ["/app/app", "--db", "data/pastes.db", "--ui", "/app/ui", "--addr", ":8080", "--admin", ":8787"]
+EXPOSE 8080
+CMD ["/app/app", "--db", "data/pastes.db", "--ui", "/app/ui", "--addr", ":8080"]

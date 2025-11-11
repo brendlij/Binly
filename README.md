@@ -17,7 +17,13 @@ Visit `http://localhost:7700`
 
 ## Features
 
-Clean code sharing with syntax highlighting, temporary expiration, optional editing, and password protection.
+- 📋 Clean code sharing with syntax highlighting
+- ⏱️ Temporary expiration (15m, 1h, 1d, 7d, or never)
+- ✏️ Optional editing for shared pastes
+- 🔒 Password protection
+- 🌓 Dark/Light mode
+- 📱 Fully responsive
+- 🎯 "My Shares" to track your pastes
 
 ## Documentation
 
@@ -25,26 +31,44 @@ Clean code sharing with syntax highlighting, temporary expiration, optional edit
 - [API Reference](docs/api.md) — Complete endpoint documentation
 - [User Guide](docs/guide.md) — Features and usage
 
+Visit `http://localhost:7700/docs` for in-app documentation.
+
 ## Tech Stack
 
-- Go backend with REST API
-- Vue 3 + TypeScript frontend
-- SQLite database
-- highlight.js for syntax highlighting
+- **Backend**: Go 1.25 with chi router
+- **Frontend**: Vue 3 + TypeScript + Vite
+- **Database**: SQLite with WAL mode
+- **Styling**: Syntax highlighting via highlight.js
+- **Deployment**: Docker multi-stage build
 
 ## Development
 
 ```bash
-# Frontend
+# Frontend (dev mode)
 cd web && bun install && bun dev
 
-# Backend
+# Backend (dev mode)
 cd backend/cmd/server && go run . --db ../../data/pastes.db --ui ../../web/dist --addr :8080
 ```
 
-- Frontend: `http://localhost:5173`
+Then:
+
+- Frontend: `http://localhost:5173` (Vite)
 - Backend: `http://localhost:8080`
+- Full stack with Docker: `docker compose up -d` → `http://localhost:7700`
+
+## API Endpoints
+
+### Public Endpoints
+
+- `POST /api/p` — Create paste
+- `GET /api/p/{id}` — Get paste
+- `POST /api/p/{id}` — Update paste (if editable)
+- `POST /api/p/{id}/auth` — Authenticate with password
+- `GET /api/raw/{id}` — Get raw plain text
+
+See [API Reference](docs/api.md) for details.
 
 ## License
 
-MIT
+GNU General Public License v3 — See [LICENSE](LICENSE)

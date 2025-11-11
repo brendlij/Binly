@@ -11,10 +11,11 @@
           <span class="title-text">inly</span>
         </router-link>
         <nav class="navbar">
+          <router-link to="/my-shares" class="nav-link">My Shares</router-link>
           <a href="/docs" class="nav-link">Docs</a>
-          <a 
-            href="https://github.com/brendlij/Binly" 
-            target="_blank" 
+          <a
+            href="https://github.com/brendlij/Binly"
+            target="_blank"
             rel="noopener noreferrer"
             class="nav-link"
           >
@@ -152,9 +153,6 @@ body,
   line-height: 1.5;
   letter-spacing: -0.01em;
   transition: var(--transition);
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
   -webkit-text-size-adjust: 100%;
   /* Custom scrollbar */
   scrollbar-color: var(--scrollbar) transparent;
@@ -334,7 +332,6 @@ body,
   justify-content: center;
   gap: var(--spacing-sm);
   border-top: 1px solid var(--border);
-  
 }
 
 .footer-link {

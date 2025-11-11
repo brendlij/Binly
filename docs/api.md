@@ -85,45 +85,12 @@ Get plain text content (no JSON wrapper).
 console.log('hello');
 ```
 
-## Admin Endpoints
+## Health Check
 
-> ⚠️ **Warning**: No authentication by default. Keep admin port internal!
+**GET** `/_health`
 
-### List Pastes
-
-**GET** `/admin`
-
-Get all pastes with metadata.
+Check if the server is running.
 
 **Response:**
 
-```json
-[
-  {
-    "id": "abc123def",
-    "created": 1699564800,
-    "expires": 0,
-    "allow_edit": false
-  }
-]
-```
-
-### Delete Paste
-
-**POST** `/admin/delete/{id}`
-
-Delete a specific paste.
-
-**Response:**
-
-- `204 No Content`
-
-### Purge Expired
-
-**POST** `/admin/purge`
-
-Delete all expired pastes immediately.
-
-**Response:**
-
-- `204 No Content`
+- `200 OK` if healthy

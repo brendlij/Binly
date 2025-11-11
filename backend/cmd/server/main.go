@@ -42,7 +42,6 @@ var (
 func main() {
 	var (
 		addr     = flag.String("addr", ":8080", "public http addr")
-		admin    = flag.String("admin", ":8787", "admin http addr")
 		dbPath   = flag.String("db", "data/pastes.db", "sqlite path")
 		uiDir    = flag.String("ui", "web/dist", "built vue dist dir")
 	)
@@ -75,6 +74,7 @@ func main() {
 	r.Post("/api/p", createPaste)
 	r.Get("/api/p/{id}", getPaste)
 	r.Post("/api/p/{id}", updatePaste)           // edit (wenn allow_edit)
+	r.Delete("/api/p/{id}", deletePaste)        // delete (owner only)
 	r.Post("/api/p/{id}/auth", authPaste)        // passwort-check
 	r.Get("/api/raw/{id}", getRaw)
 
@@ -87,15 +87,13 @@ func main() {
 		http.ServeFile(w, r, filepath.Join(*uiDir, "index.html"))
 	})
 
-	// Admin (nur lokal binden in docker-compose)
-	adminMux := chi.NewRouter()
-	adminMux.Get("/admin", adminList)
-	adminMux.Post("/admin/delete/{id}", adminDelete)
-	adminMux.Post("/admin/purge", adminPurge)
+	// TODO: Admin endpoints can be added here if needed
+	// For now, all management is done via "My Shares" UI
 
 	go func() { log.Println("Public on", *addr); log.Fatal(http.ListenAndServe(*addr, r)) }()
-	log.Println("Admin on", *admin)
-	log.Fatal(http.ListenAndServe(*admin, adminMux))
+	
+	// Keep the server running
+	select {}
 }
 
 func initSchema() error {
@@ -193,6 +191,17 @@ func updatePaste(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(204)
 }
 
+func deletePaste(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	p, err := loadPaste(id)
+	if err != nil { http.Error(w, "not found", 404); return }
+	if expired(p) { http.Error(w, "gone", 410); return }
+
+	_, err = db.Exec(`DELETE FROM pastes WHERE id=?`, id)
+	if err != nil { http.Error(w, "db error", 500); return }
+	w.WriteHeader(204)
+}
+
 func authPaste(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	p, err := loadPaste(id)
@@ -211,35 +220,6 @@ func authPaste(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   24 * 3600,
 	})
-	w.WriteHeader(204)
-}
-
-/*** Admin ***/
-func adminList(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query(`SELECT id, created_at, COALESCE(expires_at,0), allow_edit FROM pastes ORDER BY created_at DESC LIMIT 200`)
-	if err != nil { http.Error(w, "db", 500); return }
-	defer rows.Close()
-	type row struct{ ID string; Created, Expires int64; Edit int }
-	var out []row
-	for rows.Next() {
-		var x row; rows.Scan(&x.ID, &x.Created, &x.Expires, &x.Edit); out = append(out, x)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte("["))
-	for i, x := range out {
-		if i>0 { w.Write([]byte(",")) }
-		fmt.Fprintf(w, `{"id":"%s","created":%d,"expires":%d,"allow_edit":%t}`, x.ID, x.Created, x.Expires, x.Edit==1)
-	}
-	w.Write([]byte("]"))
-}
-func adminDelete(w http.ResponseWriter, r *http.Request) {
-	_, err := db.Exec(`DELETE FROM pastes WHERE id=?`, chi.URLParam(r,"id"))
-	if err != nil { http.Error(w, "db", 500); return }
-	w.WriteHeader(204)
-}
-func adminPurge(w http.ResponseWriter, r *http.Request) {
-	_, err := db.Exec(`DELETE FROM pastes WHERE expires_at IS NOT NULL AND expires_at < ?`, time.Now().Unix())
-	if err != nil { http.Error(w, "db", 500); return }
 	w.WriteHeader(204)
 }
 

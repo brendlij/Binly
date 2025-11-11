@@ -7,6 +7,5 @@ services:
       - APP_SECRET=${APP_SECRET:-super_long_random_hex}
     ports:
       - "7700:8080"
-      - "7701:8787"
     volumes:
       - ./data:/app/data

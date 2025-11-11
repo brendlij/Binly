@@ -27,11 +27,39 @@ async function createPaste(p: any) {
     }
     const j = await res.json();
     url.value = `/p/${j.id}`;
+
+    // Save to My Shares
+    const ttlMs = getTtlMs(p.ttl);
+    const share = {
+      id: j.id,
+      syntax: p.syntax || "auto",
+      createdAt: Date.now(),
+      expiresAt: ttlMs ? Date.now() + ttlMs : null,
+      allowEdit: p.allow_edit ?? false,
+      password: !!p.password,
+    };
+    const stored = localStorage.getItem("binly-my-shares");
+    const shares = stored ? JSON.parse(stored) : [];
+    shares.push(share);
+    localStorage.setItem("binly-my-shares", JSON.stringify(shares));
+
     // Direkt zum Paste navigieren
     router.push(url.value);
   } finally {
     isLoading.value = false;
   }
+}
+
+function getTtlMs(ttl: string): number | null {
+  if (!ttl || ttl === "0") return null;
+  const ttlMap: Record<string, number> = {
+    "15m": 15 * 60 * 1000,
+    "1h": 60 * 60 * 1000,
+    "1d": 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000,
+    "2h": 2 * 60 * 60 * 1000,
+  };
+  return ttlMap[ttl] || null;
 }
 </script>
 

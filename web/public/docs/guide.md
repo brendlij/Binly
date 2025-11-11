@@ -41,11 +41,22 @@ Manually select a syntax or let it auto-detect.
 Set a TTL (Time to Live) for automatic deletion:
 
 - **15 minutes**: Quick sharing
-- **2 hours**: Temporary data
+- **1 hour**: Short-term collaboration
 - **1 day**: Daily notes
+- **7 days**: Weekly reference
 - **Never**: Permanent storage
 
-Expired pastes are deleted automatically every 10 minutes.
+Expired pastes are automatically deleted every 10 minutes.
+
+## My Shares
+
+Keep track of all your shared pastes in **"My Shares"**:
+
+- ✅ View all pastes you've created
+- ⏱️ See live TTL countdown
+- 🎯 Quick actions: Copy link, View, Delete
+- 🔒 See which pastes are password-protected
+- ✏️ See which pastes allow editing
 
 ## Dark & Light Mode
 
